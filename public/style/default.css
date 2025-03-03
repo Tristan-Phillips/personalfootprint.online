@@ -1,0 +1,78 @@
+:root {
+    --low-risk: #4CAF50;
+    --medium-risk: #FFC107;
+    --high-risk: #F44336;
+}
+
+body {
+    font-family: 'Segoe UI', sans-serif;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f5f5f5;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.section {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.section-title {
+    cursor: pointer;
+    margin: 0;
+    padding: 15px;
+    background: #607D8B;
+    color: white;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.risk-badge {
+    font-size: 0.8em;
+    padding: 3px 8px;
+    border-radius: 15px;
+    margin-left: 10px;
+}
+
+.question-group {
+    margin: 15px 0;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+input, textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+button {
+    background: #2196F3;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.1em;
+    margin-top: 10px;
+}
+
+.low { background-color: var(--low-risk); }
+.medium { background-color: var(--medium-risk); }
+.high { background-color: var(--high-risk); }
