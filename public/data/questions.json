@@ -111,6 +111,14 @@
           "multiple": true
         },
         {
+          "id": "social_post",
+          "label": "Social Media Post",
+          "type": "url",
+          "placeholder": "Description of post (Remember reference link)",
+          "risklevel": 1,
+          "multiple": true
+        },
+        {
           "id": "forum_handles",
           "label": "Forum/Community IDs",
           "type": "text",

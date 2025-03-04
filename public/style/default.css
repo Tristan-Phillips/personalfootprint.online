@@ -24,6 +24,12 @@ body {
     line-height: 1.6;
 }
 
+/* VSTXT */
+.very-small-text {
+    font-size: 0.65rem;
+    text-align: center;
+}
+
 /* Input Pill Container */
 .input-pill {
     position: fixed;
@@ -334,6 +340,29 @@ input.pill-item::placeholder {
     border-color: var(--primary) transparent transparent transparent;
     z-index: 1000;
     pointer-events: none;
+}
+
+/* Github */
+.github {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px;
+}
+
+.github a {
+    display: inline-block;
+    transition: transform 0.2s ease; 
+}
+
+.github img {
+    width: 24px;
+    height: 24px;
+    display: block;
+}
+
+.github a:hover {
+    transform: scale(1.1);
 }
 
 @keyframes slideIn {
