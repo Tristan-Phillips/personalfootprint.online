@@ -1,188 +1,291 @@
-let formData;
-let collectedData = {};
+const { jsPDF } = window.jspdf;
 
-// Initialize application
-async function initApp() {
-    try {
-        // Load questions from JSON
-        const response = await fetch('/public/data/questions.json');
-        formData = await response.json();
+// State Management
+let entries = [];
+let currentQuestion = null;
+let currentReference = "";
+let questionsData = [];
 
-        // Build form and restore saved data
-        buildForm();
-        addEventListeners();
-        loadSavedData();
-    } catch (error) {
-        alert('Error loading questions. Please try again.');
-        console.error('Initialization error:', error);
-    }
+// Initialization
+async function init() {
+  try {
+    // Load questions from JSON
+    const response = await fetch("public/data/questions.json");
+    const data = await response.json();
+    questionsData = data.sections.flatMap((section) => section.questions);
+
+    buildQuestionSelector();
+    loadSavedData();
+    setupEventListeners();
+    updatePreview();
+  } catch (error) {
+    console.error("Initialization error:", error);
+    showError("Failed to load application data");
+  }
 }
 
-// Build form structure
-function buildForm() {
-    const container = document.getElementById('formContainer');
-    container.innerHTML = ''; // Clear existing content
+// DOM Utilities
+function buildQuestionSelector() {
+  const select = document.getElementById("questionSelect");
+  select.innerHTML =
+    '<option value="" disabled selected>Select a question</option>';
 
-    formData.sections.forEach(section => {
-        const sectionEl = document.createElement('div');
-        sectionEl.className = 'section';
+  questionsData.forEach((question) => {
+    const option = document.createElement("option");
+    option.value = question.id;
+    option.textContent = question.label;
+    select.appendChild(option);
+  });
 
-        // Create collapsible header
-        const header = document.createElement('div');
-        header.className = 'section-title';
-        header.innerHTML = `
-            ${section.title}
-            <span class="toggle">▼</span>
-        `;
-
-        // Create content area
-        const content = document.createElement('div');
-        content.className = 'section-content';
-
-        // Add questions
-        section.questions.forEach(question => {
-            const group = document.createElement('div');
-            group.className = 'question-group';
-
-            // Create label with risk badge
-            const label = document.createElement('label');
-            label.innerHTML = `
-                ${question.label}
-                <span class="risk-badge ${getRiskClass(question.risklevel)}">
-                    Risk: ${question.risklevel}
-                </span>
-            `;
-
-            // Create input field
-            const input = document.createElement(question.type === 'textarea' ? 'textarea' : 'input');
-            input.id = question.id;
-            input.type = question.type || 'text';
-            input.placeholder = question.placeholder || '';
-            input.value = collectedData[question.id] || '';
-
-            // Save data on input
-            input.addEventListener('input', () => {
-                collectedData[question.id] = input.value.trim();
-                localStorage.setItem(question.id, input.value.trim());
-            });
-
-            // Assemble elements
-            group.appendChild(label);
-            group.appendChild(input);
-            content.appendChild(group);
-        });
-
-        // Toggle section visibility
-        header.addEventListener('click', () => {
-            content.classList.toggle('collapsed');
-            header.querySelector('.toggle').textContent = 
-                content.classList.contains('collapsed') ? '▶' : '▼';
-        });
-
-        sectionEl.appendChild(header);
-        sectionEl.appendChild(content);
-        container.appendChild(sectionEl);
-    });
+  select.addEventListener("change", handleQuestionChange);
 }
 
-// Get risk level CSS class
-function getRiskClass(riskLevel) {
-    if (riskLevel >= 7) return 'high';
-    if (riskLevel >= 4) return 'medium';
-    return 'low';
+function handleQuestionChange(e) {
+  const questionId = e.target.value;
+  currentQuestion = questionsData.find((q) => q.id === questionId);
+  updateInputField();
 }
 
-// Load saved data from localStorage
+function updateInputField() {
+  const input = document.getElementById("answerInput");
+  if (!currentQuestion) return;
+
+  input.type = currentQuestion.type || "text";
+  input.placeholder = currentQuestion.placeholder || "Your answer...";
+  input.classList.toggle("password-field", currentQuestion.type === "password");
+}
+
+// Data Management
+function saveEntry() {
+  const answer = document.getElementById("answerInput").value.trim();
+  if (!answer || !currentQuestion) return;
+
+  entries.push({
+    id: Date.now().toString(),
+    question: currentQuestion.label,
+    answer,
+    reference: currentReference,
+    type: currentQuestion.type,
+    risk: currentQuestion.risklevel,
+  });
+
+  localStorage.setItem("footprintEntries", JSON.stringify(entries));
+  resetInputs();
+  updatePreview();
+}
+
+function deleteEntry(entryId) {
+  entries = entries.filter((entry) => entry.id !== entryId);
+  localStorage.setItem("footprintEntries", JSON.stringify(entries));
+  updatePreview();
+}
+
 function loadSavedData() {
-    formData.sections.forEach(section => {
-        section.questions.forEach(question => {
-            const savedValue = localStorage.getItem(question.id);
-            if (savedValue) {
-                collectedData[question.id] = savedValue;
-            }
-        });
+  const saved = localStorage.getItem("footprintEntries") || "[]";
+  entries = JSON.parse(saved);
+}
+
+// Clear All Functionality
+function confirmClear() {
+  if (entries.length === 0) {
+    showError("No entries to clear");
+    return;
+  }
+
+  if (confirm("⚠️ This will permanently delete all entries!\nAre you sure?")) {
+    clearAllEntries();
+  }
+}
+
+function clearAllEntries() {
+  entries = [];
+  localStorage.removeItem("footprintEntries");
+  updatePreview();
+  showError("All data has been cleared");
+}
+
+// Preview System
+function updatePreview() {
+  const container = document.getElementById("entriesContainer");
+  container.innerHTML = entries.length
+    ? ""
+    : '<p class="empty-state">No entries yet</p>';
+
+  entries.forEach((entry) => {
+    const entryEl = document.createElement("div");
+    entryEl.className = "entry-item";
+    entryEl.innerHTML = `
+            <div class="entry-question">${entry.question}</div>
+            <div class="entry-answer ${
+              entry.type === "password" ? "password-field" : ""
+            }" 
+                ${
+                  entry.type === "password"
+                    ? `data-password="${entry.answer}"`
+                    : ""
+                }>
+                ${formatAnswer(entry)}
+            </div>
+            <div class="entry-reference">${
+              entry.reference || "No reference"
+            }</div>
+            <button class="delete-btn" onclick="deleteEntry('${
+              entry.id
+            }')">✕</button>
+        `;
+    container.appendChild(entryEl);
+  });
+}
+
+// PDF Generation
+function exportPDF() {
+  const doc = new jsPDF();
+  let pageNumber = 1;
+
+  // Header/Footer
+  const addHeader = () => {
+    doc.setFontSize(10);
+    doc.setTextColor(100);
+    doc.text(
+      `Personal Footprint Report - ${new Date().toLocaleDateString()}`,
+      15,
+      15
+    );
+    doc.text(`Page ${pageNumber}`, 190, 15, { align: "right" });
+  };
+
+  const addFooter = () => {
+    doc.setFontSize(9);
+    doc.text("Confidential - personalfootprint.online", 105, 285, {
+      align: "center",
     });
-}
+  };
 
-// Add event listeners
-function addEventListeners() {
-    document.getElementById('exportBtn').addEventListener('click', exportPDF);
-}
+  // Main Table
+  doc.autoTable({
+    startY: 25,
+    head: [["Question", "Answer", "Reference", "Risk"]],
+    body: entries.map((entry) => [
+      entry.question,
+      formatPdfAnswer(entry),
+      entry.reference || "—",
+      entry.risk,
+    ]),
+    styles: { fontSize: 10, textColor: [51, 51, 51] },
+    headStyles: { fillColor: [245, 245, 245] },
+    columnStyles: {
+      3: {
+        cellWidth: 20,
+        halign: "center",
+        valign: "middle",
+      },
+    },
+    willDrawCell: (data) => {
+      if (data.column.index === 3) {
+        const risk = data.cell.raw;
+        const color =
+          risk >= 7 ? [244, 67, 54] : risk >= 4 ? [255, 193, 7] : [76, 175, 80];
 
-// Generate PDF report
-async function exportPDF() {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-
-    // Cover Page
-    doc.setFontSize(22);
-    doc.text("Personal Digital Footprint Report", 20, 20);
-    doc.setFontSize(12);
-    doc.text(`Generated: ${new Date().toLocaleDateString()}`, 20, 30);
-    doc.text("personalfootprint.online", 160, 297);
-    doc.addPage();
-
-    // Data Pages
-    formData.sections.forEach((section, index) => {
-        if (index > 0) doc.addPage();
-
-        doc.setFontSize(18);
-        doc.setTextColor(33, 150, 243);
-        doc.text(section.title, 20, 20);
-        doc.setFontSize(12);
-        doc.setTextColor(0);
-
-        const tableData = section.questions
-            .filter(q => collectedData[q.id])
-            .map(q => ({
-                question: q.label,
-                answer: collectedData[q.id],
-                risk: q.risklevel
-            }));
-
-        doc.autoTable({
-            startY: 30,
-            head: [['Question', 'Answer', 'Risk']],
-            body: tableData.map(item => [item.question, item.answer, item.risk]),
-            styles: { fontSize: 10, cellPadding: 3 },
-            columnStyles: {
-                2: { cellWidth: 25 }
-            },
-            didDrawCell: (data) => {
-                if (data.column.index === 2 && data.cell.raw) {
-                    const colors = {
-                        high: [244, 67, 54],
-                        medium: [255, 193, 7],
-                        low: [76, 175, 80]
-                    };
-                    doc.setFillColor(...colors[getRiskClass(data.cell.raw)]);
-                    doc.rect(data.cell.x + 5, data.cell.y + 2, 10, 10, 'F');
-                }
-            }
+        doc.setFillColor(...color);
+        doc.rect(data.cell.x, data.cell.y, 15, 8, "F");
+        doc.setTextColor(255);
+        doc.setFontSize(8);
+        doc.text(risk.toString(), data.cell.x + 7.5, data.cell.y + 5, {
+          align: "center",
         });
-    });
+        data.cell.text = "";
+      }
+    },
+    didDrawPage: () => {
+      addHeader();
+      addFooter();
+      pageNumber++;
+    },
+  });
 
-    // Security Page
-    doc.addPage();
-    doc.setFontSize(16);
-    doc.setTextColor(244, 67, 54);
-    doc.text("Security Warning", 20, 20);
-    doc.setFontSize(12);
-    doc.setTextColor(0);
-    const warningText = [
-        'This document contains sensitive personal information:',
-        '',
-        '• Store securely (password manager/encrypted drive)',
-        '• Do not share via unsecured channels',
-        '• Shred physical copies when no longer needed',
-        '• Review account permissions regularly',
-        '',
-        'Report generated by personalfootprint.online'
-    ];
-    doc.text(warningText, 20, 40);
+  // Security Page
+  doc.addPage();
+  addHeader();
+  addFooter();
 
-    doc.save('digital-footprint-report.pdf');
+  doc.setFontSize(16);
+  doc.text("Security Recommendations", 15, 35);
+
+  const securityContent = [
+    "This document contains sensitive personal information. Please:",
+    "- Store securely (encrypted drive/password manager)",
+    "- Shred physical copies when no longer needed",
+    "- Monitor accounts for suspicious activity",
+    "- Use unique passwords for all services",
+    "",
+    `Generated by personalfootprint.online • ${new Date().getFullYear()}`,
+  ];
+
+  doc.setFontSize(12);
+  doc.text(securityContent, 15, 50);
+
+  // Watermark
+  doc.setFontSize(48);
+  doc.setTextColor(230, 230, 230);
+  doc.text("CONFIDENTIAL", 40, 150, { angle: 45 });
+
+  doc.save(`footprint-${Date.now()}.pdf`);
 }
 
-// Start application
-window.addEventListener('DOMContentLoaded', initApp);
+// Helpers
+function formatAnswer(entry) {
+  return entry.type === "password" ? "*".repeat(8) : entry.answer;
+}
+
+function formatPdfAnswer(entry) {
+  return entry.answer;
+}
+
+function showError(message) {
+  const errorDiv = document.createElement("div");
+  errorDiv.className = "error-banner";
+  errorDiv.textContent = message;
+  document.body.prepend(errorDiv);
+  setTimeout(() => errorDiv.remove(), 5000);
+}
+
+// Event Handling
+function setupEventListeners() {
+  document.getElementById("addBtn").addEventListener("click", saveEntry);
+  document.getElementById("answerInput").addEventListener("keypress", (e) => {
+    if (e.key === "Enter") saveEntry();
+  });
+  document.getElementById("linkBtn").addEventListener("click", toggleLinkPopup);
+  document.getElementById("clearBtn").addEventListener("click", confirmClear);
+  document.addEventListener("click", (e) => {
+    if (!e.target.closest(".link-wrapper")) hideLinkPopup();
+  });
+}
+
+// Link Management
+function toggleLinkPopup() {
+  const popup = document.getElementById("linkPopup");
+  popup.style.display = popup.style.display === "flex" ? "none" : "flex";
+}
+
+function hideLinkPopup() {
+  document.getElementById("linkPopup").style.display = "none";
+}
+
+function handleReferenceSave() {
+  currentReference = document.getElementById("referenceUrl").value.trim();
+  hideLinkPopup();
+}
+
+function resetInputs() {
+  document.getElementById("answerInput").value = "";
+  currentReference = "";
+  document.getElementById("referenceUrl").value = "";
+}
+
+// Initialize Application
+window.onload = init;
+window.deleteEntry = deleteEntry;
+window.saveLink = handleReferenceSave;
+window.cancelLink = hideLinkPopup;
+window.exportPDF = exportPDF;

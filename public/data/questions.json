@@ -2,390 +2,165 @@
   "sections": [
     {
       "id": "basic_info",
-      "title": "Basic Personal Information",
+      "title": "Core Personal Information",
       "questions": [
         {
-          "id": "first_name",
-          "label": "First Name",
+          "id": "full_name",
+          "label": "Full Legal Name",
           "type": "text",
-          "placeholder": "Jane",
-          "risklevel": 1
-        },
-        {
-          "id": "middle_names",
-          "label": "Middle Names",
-          "type": "text",
-          "placeholder": "Marie",
-          "risklevel": 2
-        },
-        {
-          "id": "last_name",
-          "label": "Last Name",
-          "type": "text",
-          "placeholder": "Doe",
-          "risklevel": 1
+          "placeholder": "John Michael Doe",
+          "risklevel": 4
         },
         {
           "id": "dob",
           "label": "Date of Birth",
           "type": "date",
-          "risklevel": 4
+          "risklevel": 7
         },
         {
-          "id": "birth_place",
+          "id": "birthplace",
           "label": "Place of Birth",
           "type": "text",
           "placeholder": "City, Country",
-          "risklevel": 4
-        },
-        {
-          "id": "gender",
-          "label": "Gender/Pronouns",
-          "type": "text",
-          "placeholder": "She/Her",
-          "risklevel": 1
-        },
-        {
-          "id": "maiden_name",
-          "label": "Maiden Name",
-          "type": "text",
-          "placeholder": "If applicable",
-          "risklevel": 5
-        },
-        {
-          "id": "nicknames",
-          "label": "Nicknames/Handles",
-          "type": "text",
-          "placeholder": "e.g., @jdoe_gamer",
-          "risklevel": 2
+          "risklevel": 6
         }
       ]
     },
     {
-      "id": "contact_details",
-      "title": "Contact Details",
+      "id": "digital_ids",
+      "title": "Digital Identity Markers",
       "questions": [
         {
-          "id": "primary_email",
-          "label": "Primary Email",
+          "id": "emails",
+          "label": "Email Addresses",
           "type": "email",
-          "placeholder": "name@domain.com",
-          "risklevel": 5
+          "placeholder": "name@example.com",
+          "risklevel": 7,
+          "multiple": true
         },
         {
-          "id": "alternate_emails",
-          "label": "Alternate Emails",
+          "id": "usernames",
+          "label": "Profile Usernames",
           "type": "text",
-          "placeholder": "Add one per line",
-          "risklevel": 4
+          "placeholder": "@johnnydigital",
+          "risklevel": 3,
+          "multiple": true
         },
         {
           "id": "phone_numbers",
           "label": "Phone Numbers",
           "type": "tel",
-          "placeholder": "Include country code",
-          "risklevel": 8
-        },
-        {
-          "id": "old_phones",
-          "label": "Old/Retired Numbers",
-          "type": "tel",
-          "risklevel": 7
-        },
-        {
-          "id": "linkedin",
-          "label": "LinkedIn/Professional Profiles",
-          "type": "url",
-          "placeholder": "https://",
-          "risklevel": 3
-        },
-        {
-          "id": "addresses",
-          "label": "Mailing Addresses",
-          "type": "text",
-          "placeholder": "Current and past",
-          "risklevel": 7
+          "placeholder": "+1 555 123 4567",
+          "risklevel": 8,
+          "multiple": true
         }
       ]
     },
     {
-      "id": "location_background",
-      "title": "Location & Background",
+      "id": "geo_data",
+      "title": "Location History",
       "questions": [
         {
-          "id": "hometown",
-          "label": "Hometown",
+          "id": "current_location",
+          "label": "Current Residence",
           "type": "text",
           "placeholder": "City, Country",
-          "risklevel": 3
-        },
-        {
-          "id": "current_city",
-          "label": "Current City",
-          "type": "text",
-          "risklevel": 4
-        },
-        {
-          "id": "schools",
-          "label": "Schools/Universities Attended",
-          "type": "text",
-          "placeholder": "With years",
-          "risklevel": 3
-        },
-        {
-          "id": "employers",
-          "label": "Employers/Workplaces",
-          "type": "text",
-          "placeholder": "Job titles and dates",
-          "risklevel": 4
-        },
-        {
-          "id": "past_residences",
-          "label": "Cities/Countries Lived In",
-          "type": "text",
-          "risklevel": 4
-        }
-      ]
-    },
-    {
-      "id": "family_relationships",
-      "title": "Family & Relationships",
-      "questions": [
-        {
-          "id": "parents_names",
-          "label": "Parents’/Siblings’ Full Names",
-          "type": "text",
           "risklevel": 5
         },
         {
-          "id": "partner",
-          "label": "Partner/Spouse Name(s)",
+          "id": "previous_locations",
+          "label": "Previous Residences",
           "type": "text",
-          "risklevel": 6
-        },
-        {
-          "id": "children",
-          "label": "Children’s Names",
-          "type": "text",
-          "risklevel": 7
-        },
-        {
-          "id": "pets",
-          "label": "Pet Names/Breeds",
-          "type": "text",
-          "placeholder": "e.g., Dog: 'Buddy'",
-          "risklevel": 3
-        },
-        {
-          "id": "relationship_status",
-          "label": "Public Relationship Status",
-          "type": "text",
-          "placeholder": "e.g., 'Married since 2020'",
-          "risklevel": 2
+          "multiple": true,
+          "risklevel": 4
         }
       ]
     },
     {
-      "id": "social_media",
-      "title": "Social Media & Online Profiles",
+      "id": "financial_graph",
+      "title": "Financial Connections",
+      "questions": [
+        {
+          "id": "bank_names",
+          "label": "Banking Institutions",
+          "type": "text",
+          "placeholder": "Bank of Example",
+          "risklevel": 9,
+          "multiple": true
+        },
+        {
+          "id": "crypto_wallets",
+          "label": "Cryptocurrency Wallets",
+          "type": "text",
+          "placeholder": "0x...",
+          "risklevel": 9,
+          "multiple": true
+        }
+      ]
+    },
+    {
+      "id": "social_fabric",
+      "title": "Social Network Presence",
       "questions": [
         {
           "id": "social_profiles",
-          "label": "Active Social Media Links",
+          "label": "Social Media Profiles",
           "type": "url",
-          "placeholder": "Facebook, Instagram, etc.",
-          "risklevel": 3
+          "placeholder": "https://",
+          "risklevel": 5,
+          "multiple": true
         },
         {
-          "id": "usernames",
-          "label": "Gaming/Forum Handles",
+          "id": "forum_handles",
+          "label": "Forum/Community IDs",
           "type": "text",
-          "placeholder": "Steam, Reddit, etc.",
-          "risklevel": 3
-        },
-        {
-          "id": "website",
-          "label": "Personal Website/Blog",
-          "type": "url",
-          "risklevel": 3
-        },
-        {
-          "id": "deleted_profiles",
-          "label": "Deleted/Archived Profiles",
-          "type": "text",
-          "risklevel": 5
-        },
-        {
-          "id": "influencer_accounts",
-          "label": "Public Fan/Influencer Pages",
-          "type": "url",
-          "risklevel": 4
+          "placeholder": "Reddit: u/example",
+          "risklevel": 3,
+          "multiple": true
         }
       ]
     },
     {
-      "id": "online_activity",
-      "title": "Online Activity & Accounts",
+      "id": "device_universe",
+      "title": "Device Ecosystem",
       "questions": [
         {
-          "id": "streaming",
-          "label": "Streaming Services",
+          "id": "device_models",
+          "label": "Device Makes/Models",
           "type": "text",
-          "placeholder": "Netflix, Spotify",
-          "risklevel": 3
+          "placeholder": "Apple iPhone 14",
+          "risklevel": 4,
+          "multiple": true
         },
         {
-          "id": "ecommerce",
-          "label": "E-commerce Accounts",
+          "id": "ips_macs",
+          "label": "Known IP/MAC Addresses",
           "type": "text",
-          "placeholder": "Amazon, eBay",
-          "risklevel": 4
-        },
-        {
-          "id": "cloud_storage",
-          "label": "Cloud Storage Services",
-          "type": "text",
-          "placeholder": "Google Drive, iCloud",
-          "risklevel": 5
-        },
-        {
-          "id": "forums",
-          "label": "Forums/Communities",
-          "type": "text",
-          "placeholder": "Reddit, Discord",
-          "risklevel": 3
-        },
-        {
-          "id": "subscriptions",
-          "label": "Newsletters/Subscriptions",
-          "type": "text",
-          "placeholder": "Even inactive ones",
-          "risklevel": 2
-        },
-        {
-          "id": "memberships",
-          "label": "Club/Membership Accounts",
-          "type": "text",
-          "placeholder": "Gym, organizations",
-          "risklevel": 4
+          "placeholder": "192.168.x.x",
+          "risklevel": 6,
+          "multiple": true
         }
       ]
     },
     {
-      "id": "financial",
-      "title": "Financial & Purchasing Footprint",
+      "id": "security_blueprint",
+      "title": "Security Architecture",
       "questions": [
         {
-          "id": "bank_apps",
-          "label": "Banking/Payment Apps",
-          "type": "text",
-          "risklevel": 9
+          "id": "common_passwords",
+          "label": "Password Variants Used",
+          "type": "password",
+          "placeholder": "Enter one and click Add",
+          "risklevel": 10,
+          "multiple": true
         },
         {
-          "id": "crypto",
-          "label": "Cryptocurrency Wallets",
-          "type": "text",
-          "risklevel": 8
-        },
-        {
-          "id": "shopping_habits",
-          "label": "Frequent Brands/Stores",
-          "type": "text",
-          "placeholder": "e.g., Target, Nike",
-          "risklevel": 5
-        },
-        {
-          "id": "donations",
-          "label": "Public Donations",
-          "type": "text",
-          "placeholder": "Charities, political campaigns",
-          "risklevel": 3
-        }
-      ]
-    },
-    {
-      "id": "digital_behavior",
-      "title": "Digital Behavior & Preferences",
-      "questions": [
-        {
-          "id": "search_history",
-          "label": "Common Search Terms",
-          "type": "text",
-          "placeholder": "e.g., 'best hiking trails'",
-          "risklevel": 5
-        },
-        {
-          "id": "likes_reviews",
-          "label": "Public Likes/Reviews",
-          "type": "text",
-          "risklevel": 4
-        },
-        {
-          "id": "weak_passwords",
-          "label": "Weak/Reused Passwords",
-          "type": "text",
-          "risklevel": 9
-        },
-        {
-          "id": "security_questions",
+          "id": "security_answers",
           "label": "Security Question Answers",
           "type": "text",
-          "placeholder": "e.g., 'Mother’s maiden name'",
-          "risklevel": 9
-        }
-      ]
-    },
-    {
-      "id": "public_records",
-      "title": "Public Records & Metadata",
-      "questions": [
-        {
-          "id": "voter",
-          "label": "Voter Registration Details",
-          "type": "text",
-          "risklevel": 5
-        },
-        {
-          "id": "property",
-          "label": "Property Ownership",
-          "type": "text",
-          "risklevel": 7
-        },
-        {
-          "id": "court_records",
-          "label": "Court Records",
-          "type": "text",
-          "risklevel": 8
-        },
-        {
-          "id": "vehicle",
-          "label": "Vehicle Registration",
-          "type": "text",
-          "risklevel": 6
-        },
-        {
-          "id": "photo_metadata",
-          "label": "Photo Geotags/Timestamps",
-          "type": "text",
-          "risklevel": 5
-        }
-      ]
-    },
-    {
-      "id": "breaches",
-      "title": "Breaches & Leaks",
-      "questions": [
-        {
-          "id": "breached_accounts",
-          "label": "Accounts in Known Breaches",
-          "type": "text",
-          "risklevel": 8
-        },
-        {
-          "id": "leaked_passwords",
-          "label": "Exposed Passwords",
-          "type": "text",
-          "risklevel": 9
+          "placeholder": "Mother's maiden name",
+          "risklevel": 9,
+          "multiple": true
         }
       ]
     }
